@@ -17,6 +17,8 @@ services:
       DB_PASSWORD: krayin_password
     depends_on:
       - mysql
+    networks:
+      - krayin-net
 
   webserver:
     image: nginx:alpine
@@ -29,6 +31,8 @@ services:
       - "8000:80"
     depends_on:
       - app
+    networks:
+      - krayin-net
 
   mysql:
     image: mysql:5.7
@@ -43,6 +47,11 @@ services:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+    networks:
+      - krayin-net
+
+networks:
+  krayin-net:
 
 volumes:
   mysql_data:
