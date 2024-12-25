@@ -1,0 +1,48 @@
+version: '3.9'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: krayin-app
+    working_dir: /var/www/html
+    volumes:
+      - ./krayin:/var/www/html
+      - ./php.ini:/usr/local/etc/php/php.ini
+    environment:
+      DB_HOST: mysql
+      DB_DATABASE: krayin
+      DB_USERNAME: krayin_user
+      DB_PASSWORD: krayin_password
+    depends_on:
+      - mysql
+
+  webserver:
+    image: nginx:alpine
+    container_name: krayin-webserver
+    working_dir: /var/www/html
+    volumes:
+      - ./krayin:/var/www/html
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "8000:80"
+    depends_on:
+      - app
+
+  mysql:
+    image: mysql:5.7
+    container_name: krayin-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: krayin
+      MYSQL_USER: krayin_user
+      MYSQL_PASSWORD: krayin_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:
